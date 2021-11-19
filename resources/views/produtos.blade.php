@@ -11,7 +11,7 @@
                         <th>Nome da Produto</th>
                         <th>Quantidade</th>
                         <th>Preço</th>
-                        <th>Departamento</th>
+                        <th>Categoria</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -67,7 +67,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Salvar</button>
-                    <button type="cancel" class="btn btn-secondary" data-dissmiss="modal">Cancel</button>
+                    <button type="cancel" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                 </div>
             </form>
         </div>
@@ -77,6 +77,12 @@
 
 @section('javascript')
     <script type="text/javascript">
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKE' : "{{ csrf_token() }}"
+            }
+        });
 
         function novoProduto() {
             $('#nomeProduto').val();
@@ -119,6 +125,32 @@
                 }
             });
         }
+
+        function criarProduto() {
+
+            prod = { 
+                    nome: $('#nomeProduto').val(), 
+                    preco: $('#precoProduto').val(), 
+                    estoque: $('#quantidadeProduto').val(), 
+                    categoria_id: $('#categoriaProduto').val()
+                }
+
+                $.post('/api/produtos', prod, function(data) {
+                    
+                    produto = JSON.parse(data);
+                    linha = montarLinha(produto);
+                    $('#tabelaProdutos>tbody').append(linha);
+
+                });
+
+        }
+
+        $('#formProduto').submit(function(evento) {
+            evento.preventDefault();
+
+            criarProduto();
+            $('#dlgProdutos').modal('hide');
+        });
 
         $(function() {
             carregarCategorias();
