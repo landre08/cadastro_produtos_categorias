@@ -109,12 +109,36 @@
                             "<td>"+p.preco+"</td>"+
                             "<td>"+p.categoria_id+"</td>"+
                             "<td>"+
-                                '<button class="btn btn-sm btn-warning" style="margin-right: 5px;">Editar</button>'+
-                                '<button class="btn btn-sm btn-danger">Apagar</button>'+
+                                '<button onclick="editar('+p.id+')" class="btn btn-sm btn-warning" style="margin-right: 5px;">Editar</button>'+
+                                '<button onclick="remover('+p.id+')" class="btn btn-sm btn-danger">Apagar</button>'+
                             "</td>"+
                         "</tr>";
 
             return linha;        
+        }
+
+        function remover(id) {
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/api/produtos/'+id,
+                context: this,
+                success: function(data) {
+                    console.log('Apagou OK');
+                    linhas = $('#tabelaProdutos>tbody>tr');
+                    e = linhas.filter( function(indice, elemento) {
+                        return elemento.cells[0].textContent == id;
+                    });
+
+                    if (e) {
+                        e.remove();
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+
         }
 
         function carregarProdutos() {
